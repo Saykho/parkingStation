@@ -29,7 +29,7 @@ SOFTWARE.
 /* Includes */
 #include <stddef.h>
 #include "stm32l1xx.h"
-
+#include "servo.h"
 
 /* Private typedef */
 /* Private define  */
@@ -37,6 +37,7 @@ SOFTWARE.
 /* Private variables */
 /* Private function prototypes */
 /* Private functions */
+void Delay(uint32_t nTime);
 
 
 /**
@@ -46,37 +47,32 @@ SOFTWARE.
 **
 **===========================================================================
 */
+
 int main(void)
 {
-  int i = 0;
+	initializeServo();
 
-  /**
-  *  IMPORTANT NOTE!
-  *  See the <system_*.c> file and how/if the SystemInit() function updates 
-  *  SCB->VTOR register. Sometimes the symbol VECT_TAB_SRAM needs to be defined 
-  *  when building the project if code has been located to RAM and interrupts 
-  *  are used. Otherwise the interrupt table located in flash will be used.
-  *  E.g.  SCB->VTOR = 0x20000000;  
-  */
-
-  /**
-  *  At this stage the microcontroller clock setting is already configured,
-  *  this is done through SystemInit() function which is called from startup
-  *  file (startup_stm32l1xx_hd.s) before to branch to application main.
-  *  To reconfigure the default setting of SystemInit() function, refer to
-  *  system_stm32l1xx.c file
-  */
-
-  /* TODO - Add your application code here */
-
-
-  /* Infinite loop */
-  while (1)
-  {
-	i++;
-  }
-  return 0;
+	int dest = 1;
+	int angle = 0;
+	while (1)
+	{
+		updateServoPWM(angle);
+		Delay(1000);
+		angle = angle+dest*45;
+		if (angle == 180 || angle == 0)
+			dest = -dest;
+	}
+	return 0;
 }
+
+void Delay(uint32_t nTime)
+{
+	for (int i=0; i<1000*nTime;i++);
+//  TimingDelay = nTime;
+
+//  while(TimingDelay != 0);
+}
+
 
 #ifdef  USE_FULL_ASSERT
 
