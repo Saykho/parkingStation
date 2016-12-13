@@ -48,14 +48,6 @@ void initializeServo() {
 	initializePWMChannel();
 }
 
-void updateServoPWM(int degrees) {
-//    TIM_OCInitTypeDef outputChannelInit = {0,};
-//    outputChannelInit.TIM_OCMode = TIM_OCMode_PWM1;
-//    outputChannelInit.TIM_Pulse = pulse;
-//    outputChannelInit.TIM_OutputState = TIM_OutputState_Enable;
-//    outputChannelInit.TIM_OCPolarity = TIM_OCPolarity_High;
-//
-//    TIM_OC1Init(TIM4, &outputChannelInit);
-//    TIM_OC1PreloadConfig(TIM4, TIM_OCPreload_Enable);
-	TIM4->CCR1 = degrees*1000/180 + 400;
+void setServoSignalLength(int us) {
+	TIM4->CCR1 = us;
 }

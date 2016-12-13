@@ -28,8 +28,12 @@ SOFTWARE.
 
 /* Includes */
 #include <stddef.h>
+#include <stdlib.h>
 #include "stm32l1xx.h"
-#include "servo.h"
+
+#include "gate/gate.h"
+#include "display/display.h"
+#include "display/ssd1306.h"
 
 /* Private typedef */
 /* Private define  */
@@ -37,8 +41,7 @@ SOFTWARE.
 /* Private variables */
 /* Private function prototypes */
 /* Private functions */
-void Delay(uint32_t nTime);
-
+void delayApproxMs(int ms);
 
 /**
 **===========================================================================
@@ -50,29 +53,32 @@ void Delay(uint32_t nTime);
 
 int main(void)
 {
-	initializeServo();
+	initializeDisplay();
+	initializeGate();
 
-	int dest = 1;
-	int angle = 0;
+	int placeIsFree[] = {1, 1, 1, 1};
+	int freePlacesCount = 4;
+
 	while (1)
 	{
-		updateServoPWM(angle);
-		Delay(1000);
-		angle = angle+dest*45;
-		if (angle == 180 || angle == 0)
-			dest = -dest;
+		openGate();
+		delayApproxMs(1000);
+		closeGate();
+
+		int changedPlace = rand()%4;
+		freePlacesCount += placeIsFree[changedPlace] ? -1 : 1;
+		placeIsFree[changedPlace] = 1 - placeIsFree[changedPlace];
+		displayPlaceFree(changedPlace, placeIsFree[changedPlace]);
+		displayPlacesCount(freePlacesCount);
+
+		delayApproxMs(3000);
 	}
 	return 0;
 }
 
-void Delay(uint32_t nTime)
-{
-	for (int i=0; i<1000*nTime;i++);
-//  TimingDelay = nTime;
-
-//  while(TimingDelay != 0);
+void delayApproxMs(int ms) {
+	for (int i = 0; i < ms*1000; i++);
 }
-
 
 #ifdef  USE_FULL_ASSERT
 
