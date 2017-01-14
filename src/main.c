@@ -34,6 +34,7 @@ SOFTWARE.
 #include "gate/gate.h"
 #include "display/display.h"
 #include "display/ssd1306.h"
+#include "ultrasonic/ultrasonic.h"
 
 /* Private typedef */
 /* Private define  */
@@ -53,25 +54,57 @@ void delayApproxMs(int ms);
 
 int main(void)
 {
-	initializeDisplay();
-	initializeGate();
+//	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE);
+//	GPIO_InitTypeDef gpioInitStruct;
+//	gpioInitStruct.GPIO_OType = GPIO_OType_PP;
+//	gpioInitStruct.GPIO_Speed = GPIO_Speed_400KHz;
+//
+//	gpioInitStruct.GPIO_Mode = GPIO_Mode_OUT;
+//	gpioInitStruct.GPIO_Pin = GPIO_Pin_10;
+//	GPIO_Init(GPIOA, &gpioInitStruct);
+//
+//	GPIO_SetBits(GPIOA, GPIO_Pin_10);
+//	while (1) {
+//		GPIO_ResetBits(GPIOA, GPIO_Pin_10);
+//		for (int i = 0; i < 10; i++);
+//		GPIO_SetBits(GPIOA, GPIO_Pin_10);
+//		for (int i = 0; i < 10; i++);
+//	}
 
-	int placeIsFree[] = {1, 1, 1, 1};
+
+	initializeDisplay();
+//	initializeGate();
+	initializeUltrasonicSensors();
+
+	int placeIsFree[kUltrasonicSensorsCount] = {1};// = {1, 1, 1, 1};
 	int freePlacesCount = 4;
 
 	while (1)
 	{
-		openGate();
-		delayApproxMs(1000);
-		closeGate();
+		freePlacesCount = 0;
+		for (int i = 0; i < kUltrasonicSensorsCount; i++) {
+			int isFree = !measureProximity(i);
+			if (isFree != placeIsFree[i]) {
+				placeIsFree[i] = isFree;
+				displayPlaceFree(i, isFree);
+			}
+			freePlacesCount += isFree;
+		}
 
-		int changedPlace = rand()%4;
-		freePlacesCount += placeIsFree[changedPlace] ? -1 : 1;
-		placeIsFree[changedPlace] = 1 - placeIsFree[changedPlace];
-		displayPlaceFree(changedPlace, placeIsFree[changedPlace]);
-		displayPlacesCount(freePlacesCount);
+//		displayPlacesCount(freePlacesCount);
 
-		delayApproxMs(3000);
+		//Display and servo demo
+//		openGate();
+//		delayApproxMs(1000);
+//		closeGate();
+//
+//		int changedPlace = rand()%4;
+//		freePlacesCount += placeIsFree[changedPlace] ? -1 : 1;
+//		placeIsFree[changedPlace] = 1 - placeIsFree[changedPlace];
+//		displayPlaceFree(changedPlace, placeIsFree[changedPlace]);
+//		displayPlacesCount(freePlacesCount);
+//
+//		delayApproxMs(3000);
 	}
 	return 0;
 }

@@ -18,7 +18,7 @@ void initSPI2(void)
 	//PB3 - SPI2_SCK
 	//PB4 - SPI2_MISO
 	//PB5 - SPI2_MOSI
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5|GPIO_Pin_5|GPIO_Pin_7;
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5|GPIO_Pin_6|GPIO_Pin_7;
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
 
 	GPIO_PinAFConfig(GPIOA, GPIO_PinSource5, GPIO_AF_SPI1);
